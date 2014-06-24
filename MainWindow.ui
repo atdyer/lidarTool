@@ -65,8 +65,15 @@
     </widget>
     <addaction name="menuColor"/>
    </widget>
+   <widget class="QMenu" name="menuFilters">
+    <property name="title">
+     <string>Filters</string>
+    </property>
+    <addaction name="actionGSDFilter"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuDisplay"/>
+   <addaction name="menuFilters"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -87,6 +94,11 @@
   <action name="actionGradient">
    <property name="text">
     <string>Gradient</string>
+   </property>
+  </action>
+  <action name="actionGSDFilter">
+   <property name="text">
+    <string>GSD Filter</string>
    </property>
   </action>
  </widget>

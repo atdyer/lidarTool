@@ -7,37 +7,26 @@
 #include <QSettings>
 #include <QColor>
 
-// Point Cloud Library
-#include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/geometry.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/io/pcd_io.h>
-
 // LAS File Reading Library
 #include <liblas/liblas.hpp>
 #include <liblas/reader.hpp>
 #include <liblas/header.hpp>
 #include <fstream>
 
-// Eigen Library
-#include <eigen3/Eigen/Eigen>
-
 // Visualization Toolkit (VTK)
 #include <vtkRenderWindow.h>
 #include <vtkCutter.h>
 #include <vtkPlane.h>
 
-typedef pcl::PointXYZRGBA PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
+// Data Types
+#include "DataTypes.h"
+
+// Filters
+#include "Dialogs/DialogGSDFilter.h"
 
 namespace Ui {
 	class MainWindow;
 }
-
-enum {MaxRecentFiles = 5};
 
 class MainWindow : public QMainWindow
 {
@@ -50,6 +39,7 @@ class MainWindow : public QMainWindow
 	public slots:
 
 		void	closeFile();
+		void	filterGSD();
 		void	openFile();
 		void	openRecentFile();
 		void	status(QString newStatus, int time);
@@ -72,8 +62,12 @@ class MainWindow : public QMainWindow
 		void	saveSettings();
 		void	updateRecentFiles();
 
+		// Action Menu Items
 		QAction	*recentFiles[MaxRecentFiles];
 		QAction	*recentProjectsFiles;
+
+		// Modeless Dialog Windows
+		DialogGSDFilter	*gsdDialog;
 };
 
 #endif // MAINWINDOW_H

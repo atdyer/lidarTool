@@ -17,8 +17,16 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        MainWindow.cpp
+        MainWindow.cpp \
+    Filters/GSDFilter.cpp \
+    DataStructures/Grid.cpp \
+    Dialogs/DialogGSDFilter.cpp
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    Filters/GSDFilter.h \
+    DataTypes.h \
+    DataStructures/Grid.h \
+    Dialogs/DialogGSDFilter.h
 
-FORMS    += MainWindow.ui
+FORMS    += MainWindow.ui \
+    Dialogs/DialogGSDFilter.ui
