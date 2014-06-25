@@ -69,6 +69,7 @@
     <property name="title">
      <string>Filters</string>
     </property>
+    <addaction name="actionCreateFilter"/>
     <addaction name="actionGSDFilter"/>
    </widget>
    <addaction name="menuFile"/>
@@ -99,6 +100,11 @@
   <action name="actionGSDFilter">
    <property name="text">
     <string>GSD Filter</string>
+   </property>
+  </action>
+  <action name="actionCreateFilter">
+   <property name="text">
+    <string>Create Filter...</string>
    </property>
   </action>
  </widget>

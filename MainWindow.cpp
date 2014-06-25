@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(ui->actionClose, SIGNAL(triggered()), this, SLOT(closeFile()));
 	connect(ui->actionGradient, SIGNAL(triggered()), this, SLOT(useColorGradient()));
+	connect(ui->actionCreateFilter, SIGNAL(triggered()), this, SLOT(filterCreate()));
 	connect(ui->actionGSDFilter, SIGNAL(triggered()), this, SLOT(filterGSD()));
 
 }
@@ -45,6 +46,13 @@ void MainWindow::closeFile()
 	viewer->removeAllPointClouds();
 	viewer->resetCamera();
 	ui->viewport->update();
+}
+
+
+void MainWindow::filterCreate()
+{
+	DialogFilter dlg;
+	dlg.exec();
 }
 
 

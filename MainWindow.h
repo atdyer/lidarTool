@@ -22,6 +22,7 @@
 #include "DataTypes.h"
 
 // Filters
+#include "Dialogs/DialogFilter.h"
 #include "Dialogs/DialogGSDFilter.h"
 
 namespace Ui {
@@ -39,6 +40,7 @@ class MainWindow : public QMainWindow
 	public slots:
 
 		void	closeFile();
+		void	filterCreate();
 		void	filterGSD();
 		void	openFile();
 		void	openRecentFile();
