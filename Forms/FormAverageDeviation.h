@@ -24,6 +24,11 @@ class FormAverageDeviation : public QWidget
 
 		void	tendencyMeasureChanged(QString);
 		void	scalingFactorChanged(double);
+		void	roundingValueChanged(QString);
+
+	protected slots:
+
+		void	tendencyChanged(QString val);
 };
 
 #endif // FORMAVERAGEDEVIATION_H

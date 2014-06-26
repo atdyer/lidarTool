@@ -79,6 +79,7 @@ void DialogFilter::AddAverageDeviationFilter()
 
 	connect(form, SIGNAL(tendencyMeasureChanged(QString)), filter, SLOT(setTendencyMeasure(QString)));
 	connect(form, SIGNAL(scalingFactorChanged(double)), filter, SLOT(setScalingFactor(double)));
+	connect(form, SIGNAL(roundingValueChanged(QString)), filter, SLOT(setRoundingValue(QString)));
 }
 
 
@@ -286,6 +287,8 @@ void DialogFilter::filterFinished(PointCloudT *cloud)
 		}
 	} else {
 
+		disconnect(filterList.last(), SIGNAL(filterFinished(PointCloudT*)), this, SIGNAL(filterComplete(PointCloudT*)));
+		this->cloud = cloud;
 		ui->progressMain->setVisible(false);
 		ui->progressSub->setVisible(false);
 		ui->addFilterButton->setEnabled(true);
