@@ -18,9 +18,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         MainWindow.cpp \
-    Filters/GSDFilter.cpp \
-    DataStructures/Grid.cpp \
-    Dialogs/DialogGSDFilter.cpp \
     Dialogs/DialogFilter.cpp \
     Filters/Filter.cpp \
     Filters/StandardDeviation.cpp \
@@ -29,10 +26,7 @@ SOURCES += main.cpp\
     Forms/FormStandardDeviation.cpp
 
 HEADERS  += MainWindow.h \
-    Filters/GSDFilter.h \
     DataTypes.h \
-    DataStructures/Grid.h \
-    Dialogs/DialogGSDFilter.h \
     Dialogs/DialogFilter.h \
     Filters/Filter.h \
     Filters/StandardDeviation.h \
@@ -41,7 +35,6 @@ HEADERS  += MainWindow.h \
     Forms/FormStandardDeviation.h
 
 FORMS    += MainWindow.ui \
-    Dialogs/DialogGSDFilter.ui \
     Dialogs/DialogFilter.ui \
     Forms/FormAverageDeviation.ui \
     Forms/FormStandardDeviation.ui

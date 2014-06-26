@@ -7,8 +7,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	gsdDialog = 0;
-
 	// Load settings
 	loadSettings();
 
@@ -27,7 +25,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->actionClose, SIGNAL(triggered()), this, SLOT(closeFile()));
 	connect(ui->actionGradient, SIGNAL(triggered()), this, SLOT(useColorGradient()));
 	connect(ui->actionCreateFilter, SIGNAL(triggered()), this, SLOT(filterCreate()));
-	connect(ui->actionGSDFilter, SIGNAL(triggered()), this, SLOT(filterGSD()));
 
 }
 
@@ -56,22 +53,6 @@ void MainWindow::filterCreate()
 		dlg->SetCloud(cloud);
 	connect(dlg, SIGNAL(filterComplete(PointCloudT*)), this, SLOT(useNewCloud(PointCloudT*)));
 	dlg->exec();
-}
-
-
-void MainWindow::filterGSD()
-{
-	if (cloud->points.size() > 0)
-	{
-		if (!gsdDialog)
-		{
-			gsdDialog = new DialogGSDFilter(cloud, this);
-		}
-
-		gsdDialog->show();
-		gsdDialog->raise();
-		gsdDialog->activateWindow();
-	}
 }
 
 

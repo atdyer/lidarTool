@@ -17,7 +17,6 @@
 
 // Filters
 #include "Dialogs/DialogFilter.h"
-#include "Dialogs/DialogGSDFilter.h"
 
 namespace Ui {
 	class MainWindow;
@@ -35,7 +34,6 @@ class MainWindow : public QMainWindow
 
 		void	closeFile();
 		void	filterCreate();
-		void	filterGSD();
 		void	openFile();
 		void	openRecentFile();
 		void	status(QString newStatus, int time);
@@ -62,9 +60,6 @@ class MainWindow : public QMainWindow
 		// Action Menu Items
 		QAction	*recentFiles[MaxRecentFiles];
 		QAction	*recentProjectsFiles;
-
-		// Modeless Dialog Windows
-		DialogGSDFilter	*gsdDialog;
 };
 
 #endif // MAINWINDOW_H

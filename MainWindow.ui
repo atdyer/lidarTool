@@ -70,7 +70,6 @@
      <string>Filters</string>
     </property>
     <addaction name="actionCreateFilter"/>
-    <addaction name="actionGSDFilter"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuDisplay"/>

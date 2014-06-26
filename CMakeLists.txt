@@ -12,28 +12,21 @@ add_definitions     (${PCL_DEFINITIONS})
 set  (project_SOURCES main.cpp 
 		      MainWindow.cpp 
 		      Filters/Filter.cpp
-		      Filters/GSDFilter.cpp 
 		      Filters/AverageDeviation.cpp
 		      Filters/StandardDeviation.cpp
 		      Forms/FormAverageDeviation.cpp
 		      Forms/FormStandardDeviation.cpp
-		      DataStructures/Grid.cpp
-		      Dialogs/DialogFilter.cpp
-		      Dialogs/DialogGSDFilter.cpp)
+		      Dialogs/DialogFilter.cpp)
 set  (project_HEADERS MainWindow.h
 		      DataTypes.h
 		      Filters/Filter.h
-		      Filters/GSDFilter.h
 		      Filters/AverageDeviation.h
 		      Filters/StandardDeviation.h
 		      Forms/FormAverageDeviation.h
 		      Forms/FormStandardDeviation.h
-		      DataStructures/Grid.h
-		      Dialogs/DialogFilter.h
-		      Dialogs/DialogGSDFilter.h)
+		      Dialogs/DialogFilter.h)
 set  (project_FORMS   MainWindow.ui
 		      Dialogs/DialogFilter.ui
-		      Dialogs/DialogGSDFilter.ui
 		      Forms/FormAverageDeviation.ui
 		      Forms/FormStandardDeviation.ui)
 set  (VTK_LIBRARIES   vtkRendering vtkGraphics vtkHybrid QVTK)
