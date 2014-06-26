@@ -7,12 +7,6 @@
 #include <QSettings>
 #include <QColor>
 
-// LAS File Reading Library
-#include <liblas/liblas.hpp>
-#include <liblas/reader.hpp>
-#include <liblas/header.hpp>
-#include <fstream>
-
 // Visualization Toolkit (VTK)
 #include <vtkRenderWindow.h>
 #include <vtkCutter.h>
@@ -46,6 +40,7 @@ class MainWindow : public QMainWindow
 		void	openRecentFile();
 		void	status(QString newStatus, int time);
 		void	useColorGradient();
+		void	useNewCloud(PointCloudT *newCloud);
 
 	protected:
 		// Point cloud viewer

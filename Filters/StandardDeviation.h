@@ -5,11 +5,20 @@
 
 class StandardDeviation : public Filter
 {
+		Q_OBJECT
 	public:
 		StandardDeviation();
 		static QString	GetFilterName() {return "Standard Deviation";}
 
 		void	run();
+
+	private:
+
+		double	numStdDevs;
+
+	public slots:
+
+		void	setNumStandardDeviations(double stdDev);
 
 };
 

@@ -16,9 +16,16 @@ DialogFilter::~DialogFilter()
 }
 
 
+void DialogFilter::SetCloud(PointCloudT *newCloud)
+{
+	cloud = newCloud;
+}
+
+
 void DialogFilter::Initialize()
 {
 	// Initialize defaults
+	cloud = 0;
 	currentFilter = 0;
 
 	// Hide the progress bars
@@ -69,6 +76,9 @@ void DialogFilter::AddAverageDeviationFilter()
 	FormAverageDeviation *form = new FormAverageDeviation(this);
 	ui->stackedWidget->addWidget(form);
 	ui->stackedWidget->setCurrentWidget(form);
+
+	connect(form, SIGNAL(tendencyMeasureChanged(QString)), filter, SLOT(setTendencyMeasure(QString)));
+	connect(form, SIGNAL(scalingFactorChanged(double)), filter, SLOT(setScalingFactor(double)));
 }
 
 
@@ -91,6 +101,13 @@ void DialogFilter::AddStandardDeviationFilter()
 	connect(filter, SIGNAL(filterStarted()), this, SLOT(filterStarted()));
 
 	filterList.append(filter);
+
+	// Add Form
+	FormStandardDeviation *form = new FormStandardDeviation(this);
+	ui->stackedWidget->addWidget(form);
+	ui->stackedWidget->setCurrentWidget(form);
+
+	connect(form, SIGNAL(numStandardDeviationsChanged(double)), filter, SLOT(setNumStandardDeviations(double)));
 }
 
 
@@ -201,8 +218,15 @@ void DialogFilter::startFilter()
 	Filter *filter = filterList.first();
 	filter->setAutoDelete(false);
 
+	// Set the cloud in the first filter
+	filter->setInputCloud(cloud);
+
 	// Start the first filter
 	QThreadPool::globalInstance()->start(filter);
+
+	// Setup the last filter
+	Filter *lastFilter = filterList.last();
+	connect(lastFilter, SIGNAL(filterFinished(PointCloudT*)), this, SIGNAL(filterComplete(PointCloudT*)));
 
 }
 

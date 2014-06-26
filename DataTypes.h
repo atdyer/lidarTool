@@ -10,6 +10,12 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/pcd_io.h>
 
+// LAS File Reading Library
+#include <liblas/liblas.hpp>
+#include <liblas/reader.hpp>
+#include <liblas/header.hpp>
+#include <fstream>
+
 // Eigen Library
 #include <eigen3/Eigen/Eigen>
 

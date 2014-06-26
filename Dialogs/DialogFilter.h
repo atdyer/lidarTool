@@ -19,6 +19,7 @@
 
 // Forms
 #include "../Forms/FormAverageDeviation.h"
+#include "../Forms/FormStandardDeviation.h"
 
 // Point Cloud
 #include "../DataTypes.h"
@@ -35,10 +36,14 @@ class DialogFilter : public QDialog
 		explicit DialogFilter(QWidget *parent = 0);
 		~DialogFilter();
 
+		void	SetCloud(PointCloudT *newCloud);
+
 	private:
 		Ui::DialogFilter	*ui;
 		QToolBar		*toolbar;
 		QActionGroup		*actiongroup;
+
+		PointCloudT	*cloud;
 
 		QList<Filter*>	filterList;
 		QList<QAction*>	actionList;
@@ -62,6 +67,10 @@ class DialogFilter : public QDialog
 		void	filterStarted();
 		void	filterProgress(int val);
 		void	filterFinished(PointCloudT *cloud);
+
+	signals:
+
+		void	filterComplete(PointCloudT*);
 };
 
 #endif // DIALOGFILTER_H

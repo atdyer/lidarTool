@@ -51,8 +51,11 @@ void MainWindow::closeFile()
 
 void MainWindow::filterCreate()
 {
-	DialogFilter dlg;
-	dlg.exec();
+	DialogFilter *dlg = new DialogFilter(this);
+	if (cloud)
+		dlg->SetCloud(cloud);
+	connect(dlg, SIGNAL(filterComplete(PointCloudT*)), this, SLOT(useNewCloud(PointCloudT*)));
+	dlg->exec();
 }
 
 
@@ -119,6 +122,22 @@ void MainWindow::useColorGradient()
 	}
 
 	viewer->updatePointCloud(cloudPtr);
+	ui->viewport->update();
+}
+
+
+void MainWindow::useNewCloud(PointCloudT *newCloud)
+{
+	// Clear the existing point cloud
+	viewer->removeAllPointClouds();
+
+	// Use the new point cloud
+	cloud = newCloud;
+	cloudPtr.reset(newCloud);
+
+	// Add the cloud to the viewer
+	viewer->addPointCloud(cloudPtr, "cloud");
+	viewer->resetCamera();
 	ui->viewport->update();
 }
 

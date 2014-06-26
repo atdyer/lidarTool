@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     Filters/Filter.cpp \
     Filters/StandardDeviation.cpp \
     Filters/AverageDeviation.cpp \
-    Forms/FormAverageDeviation.cpp
+    Forms/FormAverageDeviation.cpp \
+    Forms/FormStandardDeviation.cpp
 
 HEADERS  += MainWindow.h \
     Filters/GSDFilter.h \
@@ -36,9 +37,11 @@ HEADERS  += MainWindow.h \
     Filters/Filter.h \
     Filters/StandardDeviation.h \
     Filters/AverageDeviation.h \
-    Forms/FormAverageDeviation.h
+    Forms/FormAverageDeviation.h \
+    Forms/FormStandardDeviation.h
 
 FORMS    += MainWindow.ui \
     Dialogs/DialogGSDFilter.ui \
     Dialogs/DialogFilter.ui \
-    Forms/FormAverageDeviation.ui
+    Forms/FormAverageDeviation.ui \
+    Forms/FormStandardDeviation.ui
