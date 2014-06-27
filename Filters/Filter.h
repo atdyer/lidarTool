@@ -5,6 +5,7 @@
 #include <QRunnable>
 
 #include "../DataTypes.h"
+#include "../Grids/Grid.h"
 
 class Filter : public QObject, public QRunnable
 {
@@ -15,10 +16,12 @@ class Filter : public QObject, public QRunnable
 	protected:
 
 		PointCloudT	*cloud;
+		Grid		*grid;
 
 	public slots:
 
 		void	setInputCloud(PointCloudT *cloud);
+		void	setInputGrid(Grid *grid);
 
 	signals:
 
@@ -26,6 +29,7 @@ class Filter : public QObject, public QRunnable
 		void	filterStarted();
 		void	filterProgress(int);
 		void	filterFinished(PointCloudT*);
+		void	filterFinished(Grid*);
 };
 
 #endif // FILTER_H

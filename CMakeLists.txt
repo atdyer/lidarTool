@@ -16,6 +16,10 @@ set  (project_SOURCES main.cpp
 		      Filters/StandardDeviation.cpp
 		      Forms/FormAverageDeviation.cpp
 		      Forms/FormStandardDeviation.cpp
+		      Forms/FormRegularGrid.cpp
+		      Grids/Grid.cpp
+		      Grids/GridCell.cpp
+		      Grids/RegularGrid.cpp
 		      Dialogs/DialogFilter.cpp)
 set  (project_HEADERS MainWindow.h
 		      DataTypes.h
@@ -24,11 +28,16 @@ set  (project_HEADERS MainWindow.h
 		      Filters/StandardDeviation.h
 		      Forms/FormAverageDeviation.h
 		      Forms/FormStandardDeviation.h
+		      Forms/FormRegularGrid.h
+		      Grids/Grid.h
+		      Grids/GridCell.h
+		      Grids/RegularGrid.h
 		      Dialogs/DialogFilter.h)
 set  (project_FORMS   MainWindow.ui
 		      Dialogs/DialogFilter.ui
 		      Forms/FormAverageDeviation.ui
-		      Forms/FormStandardDeviation.ui)
+		      Forms/FormStandardDeviation.ui
+		      Forms/FormRegularGrid.ui)
 set  (VTK_LIBRARIES   vtkRendering vtkGraphics vtkHybrid QVTK)
 
 QT4_WRAP_CPP (project_HEADERS_MOC   ${project_HEADERS})

@@ -7,7 +7,7 @@ class StandardDeviation : public Filter
 {
 		Q_OBJECT
 	public:
-		StandardDeviation();
+		StandardDeviation(QObject *parent = 0);
 		static QString	GetFilterName() {return "Standard Deviation";}
 
 		void	run();
@@ -15,6 +15,9 @@ class StandardDeviation : public Filter
 	private:
 
 		double	numStdDevs;
+
+		void	runCloud();
+		void	runGrid();
 
 	public slots:
 

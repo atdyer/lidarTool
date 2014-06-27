@@ -11,3 +11,9 @@ void Filter::setInputCloud(PointCloudT *cloud)
 {
 	this->cloud = cloud;
 }
+
+
+void Filter::setInputGrid(Grid *grid)
+{
+	this->grid = grid;
+}

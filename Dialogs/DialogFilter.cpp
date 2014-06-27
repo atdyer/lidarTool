@@ -26,16 +26,26 @@ void DialogFilter::Initialize()
 {
 	// Initialize defaults
 	cloud = 0;
-	currentFilter = 0;
+	currentStep = 0;
 
 	// Hide the progress bars
 	ui->progressMain->setVisible(false);
 	ui->progressSub->setVisible(false);
 
-	// Add the filter names to the filter list
-	ui->filterList->clear();
-	ui->filterList->addItem(AverageDeviation::GetFilterName());
-	ui->filterList->addItem(StandardDeviation::GetFilterName());
+	// Add the filters and grids to the tree
+	ui->itemTree->setColumnCount(1);
+	filterParent = new QTreeWidgetItem(ui->itemTree);
+	filterParent->setText(0, "Filters");
+	gridParent = new QTreeWidgetItem(ui->itemTree);
+	gridParent->setText(0, "Grids");
+
+	QTreeWidgetItem *averageDeviation = new QTreeWidgetItem(filterParent);
+	QTreeWidgetItem *standardDeviation = new QTreeWidgetItem(filterParent);
+	QTreeWidgetItem *regularGrid = new QTreeWidgetItem(gridParent);
+
+	averageDeviation->setText(0, AverageDeviation::GetFilterName());
+	standardDeviation->setText(0, StandardDeviation::GetFilterName());
+	regularGrid->setText(0, RegularGrid::GetGridName());
 
 	// Create the toolbar
 	toolbar = new QToolBar(this);
@@ -44,7 +54,7 @@ void DialogFilter::Initialize()
 	connect(actiongroup, SIGNAL(triggered(QAction*)), this, SLOT(selectFilter(QAction*)));
 
 	// Connect buttons
-	connect(ui->addFilterButton, SIGNAL(clicked()), this, SLOT(addFilter()));
+	connect(ui->itemTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(itemSelected(QTreeWidgetItem*,int)));
 	connect(ui->moveRightButton, SIGNAL(clicked()), this, SLOT(moveFilterRight()));
 	connect(ui->moveLeftButton, SIGNAL(clicked()), this, SLOT(moveFilterLeft()));
 	connect(ui->removeButton, SIGNAL(clicked()), this, SLOT(removeFilter()));
@@ -71,6 +81,7 @@ void DialogFilter::AddAverageDeviationFilter()
 	connect(filter, SIGNAL(filterStarted()), this, SLOT(filterStarted()));
 
 	filterList.append(filter);
+	itemList.append(filter);
 
 	// Add Form
 	FormAverageDeviation *form = new FormAverageDeviation(this);
@@ -98,10 +109,12 @@ void DialogFilter::AddStandardDeviationFilter()
 
 	connect(filter, SIGNAL(filterError(QString)), this, SLOT(filterError(QString)));
 	connect(filter, SIGNAL(filterFinished(PointCloudT*)), this, SLOT(filterFinished(PointCloudT*)));
+	connect(filter, SIGNAL(filterFinished(Grid*)), this, SLOT(gridFinished(Grid*)));
 	connect(filter, SIGNAL(filterProgress(int)), this, SLOT(filterProgress(int)));
 	connect(filter, SIGNAL(filterStarted()), this, SLOT(filterStarted()));
 
 	filterList.append(filter);
+	itemList.append(filter);
 
 	// Add Form
 	FormStandardDeviation *form = new FormStandardDeviation(this);
@@ -112,18 +125,53 @@ void DialogFilter::AddStandardDeviationFilter()
 }
 
 
-void DialogFilter::addFilter()
+void DialogFilter::AddRegularGrid()
 {
-	QString newType = ui->filterList->currentText();
+	// Add Button
+	QAction *action = new QAction(RegularGrid::GetGridName(), this);
+	action->setCheckable(true);
+	toolbar->addAction(action);
+	actiongroup->addAction(action);
+	action->setChecked(true);
+	actionList.push_back(action);
 
-	// Add a new filter based on the text of the selection
-	if (newType == AverageDeviation::GetFilterName())
+	// Add Grid
+	RegularGrid *grid = new RegularGrid();
+
+	connect(grid, SIGNAL(gridError(QString)), this, SLOT(gridError(QString)));
+	connect(grid, SIGNAL(gridFinished(Grid*)), this, SLOT(gridFinished(Grid*)));
+	connect(grid, SIGNAL(gridProgress(int)), this, SLOT(gridProgress(int)));
+	connect(grid, SIGNAL(gridStarted()), this, SLOT(gridStarted()));
+
+	gridList.append(grid);
+	itemList.append(grid);
+
+	// Add Form
+	FormRegularGrid *form = new FormRegularGrid(this);
+	ui->stackedWidget->addWidget(form);
+	ui->stackedWidget->setCurrentWidget(form);
+
+	connect(form, SIGNAL(numRowsChanged(int)), grid, SLOT(setNumRows(int)));
+	connect(form, SIGNAL(numColsChanged(int)), grid, SLOT(setNumCols(int)));
+
+}
+
+
+void DialogFilter::itemSelected(QTreeWidgetItem *item, int)
+{
+	QString text = item->text(0);
+
+	if (QString::compare(text, AverageDeviation::GetFilterName()) == 0)
 	{
 		AddAverageDeviationFilter();
 	}
-	else if (newType == StandardDeviation::GetFilterName())
+	else if (QString::compare(text, StandardDeviation::GetFilterName()) == 0)
 	{
 		AddStandardDeviationFilter();
+	}
+	else if (QString::compare(text, RegularGrid::GetGridName()) == 0)
+	{
+		AddRegularGrid();
 	}
 }
 
@@ -139,6 +187,7 @@ void DialogFilter::moveFilterRight()
 		toolbar->removeAction(currentAction);
 		toolbar->insertAction(rightAction, currentAction);
 		actionList.move(index, index+1);
+		filterList.move(index, index+1);
 		ui->stackedWidget->removeWidget(widget);
 		ui->stackedWidget->insertWidget(index+1, widget);
 		ui->stackedWidget->setCurrentIndex(index+1);
@@ -146,6 +195,7 @@ void DialogFilter::moveFilterRight()
 		toolbar->removeAction(currentAction);
 		toolbar->addAction(currentAction);
 		actionList.move(index, index+1);
+		filterList.move(index, index+1);
 		ui->stackedWidget->removeWidget(widget);
 		ui->stackedWidget->insertWidget(index+1, widget);
 		ui->stackedWidget->setCurrentIndex(index+1);
@@ -164,6 +214,7 @@ void DialogFilter::moveFilterLeft()
 		toolbar->removeAction(currentAction);
 		toolbar->insertAction(leftAction, currentAction);
 		actionList.move(index, index-1);
+		filterList.move(index, index-1);
 		ui->stackedWidget->removeWidget(widget);
 		ui->stackedWidget->insertWidget(index-1, widget);
 		ui->stackedWidget->setCurrentIndex(index-1);
@@ -175,10 +226,15 @@ void DialogFilter::removeFilter()
 {
 	QAction *currentAction = actiongroup->checkedAction();
 	int index = actionList.indexOf(currentAction);
+	Filter *currentFilter = filterList.takeAt(index);
 	toolbar->removeAction(currentAction);
 	actiongroup->removeAction(currentAction);
 	actionList.removeOne(currentAction);
 	ui->stackedWidget->removeWidget(ui->stackedWidget->widget(index));
+
+	if (currentFilter)
+		delete currentFilter;
+
 	if (actionList.size() > 0)
 	{
 		if (index < actionList.size())
@@ -203,31 +259,98 @@ void DialogFilter::selectFilter(QAction *action)
 
 void DialogFilter::startFilter()
 {
-	// Prevent the user from screwing things up
-	ui->addFilterButton->setEnabled(false);
+	if (!itemList.isEmpty())
+	{
+		// Prevent the user from screwing things up
+		ui->itemTree->setEnabled(false);
 
-	// Show the progress bars
-	ui->progressMain->setVisible(true);
-	ui->progressSub->setVisible(true);
-	ui->progressMain->setFormat("");
-	ui->progressMain->setMaximum(actionList.length()*100);
-	ui->progressMain->setValue(0);
-	ui->progressSub->setValue(0);
+		// Show the progress bars
+		ui->progressMain->setVisible(true);
+		ui->progressSub->setVisible(true);
+		ui->progressMain->setFormat("");
+		ui->progressMain->setMaximum(actionList.length()*100);
+		ui->progressMain->setValue(0);
+		ui->progressSub->setValue(0);
 
-	// Setup the first filter
-	currentFilter = 0;
-	Filter *filter = filterList.first();
-	filter->setAutoDelete(false);
+		// Setup the first step
+		QObject *firstStep = itemList.first();
+		Filter *firstFilter = 0;
+		for (int i=0; i<filterList.length(); ++i)
+			if (firstStep == filterList[i])
+				firstFilter = filterList[i];
+		Grid *firstGrid = 0;
+		for (int i=0; i<gridList.length(); ++i)
+			if (firstStep == gridList[i])
+				firstGrid = gridList[i];
 
-	// Set the cloud in the first filter
-	filter->setInputCloud(cloud);
+		if (firstFilter)
+		{
+			firstFilter->setAutoDelete(false);
+			firstFilter->setInputCloud(cloud);
+		}
 
-	// Start the first filter
-	QThreadPool::globalInstance()->start(filter);
+		else if (firstGrid)
+		{
+			firstGrid->setAutoDelete(false);
+			firstGrid->setInputCloud(cloud);
+		}
 
-	// Setup the last filter
-	Filter *lastFilter = filterList.last();
-	connect(lastFilter, SIGNAL(filterFinished(PointCloudT*)), this, SIGNAL(filterComplete(PointCloudT*)));
+		else
+			return;
+
+		// Setup the last step
+		QObject *lastStep = itemList.last();
+		Filter *lastFilter = 0;
+		for (int i=0; i<filterList.size(); ++i)
+			if (lastStep == filterList[i])
+				lastFilter = filterList[i];
+		Grid *lastGrid = 0;
+		for (int i=0; i<gridList.size(); ++i)
+			if (lastStep == gridList[i])
+				lastGrid = gridList[i];
+
+		if (lastFilter)
+			connect(lastFilter, SIGNAL(filterFinished(PointCloudT*)), this, SIGNAL(filterComplete(PointCloudT*)));
+		else if (lastGrid)
+			connect(lastGrid, SIGNAL(gridFinished(Grid*)), this, SIGNAL(filterComplete(Grid*)));
+		else
+			return;
+
+		if (firstFilter)
+			QThreadPool::globalInstance()->start(firstFilter);
+		else if (firstGrid)
+			QThreadPool::globalInstance()->start(firstGrid);
+
+	}
+
+//	if (!filterList.isEmpty())
+//	{
+//		// Prevent the user from screwing things up
+//		ui->itemTree->setEnabled(false);
+
+//		// Show the progress bars
+//		ui->progressMain->setVisible(true);
+//		ui->progressSub->setVisible(true);
+//		ui->progressMain->setFormat("");
+//		ui->progressMain->setMaximum(actionList.length()*100);
+//		ui->progressMain->setValue(0);
+//		ui->progressSub->setValue(0);
+
+//		// Setup the first filter
+//		currentFilter = 0;
+//		Filter *filter = filterList.first();
+//		filter->setAutoDelete(false);
+
+//		// Set the cloud in the first filter
+//		filter->setInputCloud(cloud);
+
+//		// Setup the last filter
+//		Filter *lastFilter = filterList.last();
+//		connect(lastFilter, SIGNAL(filterFinished(PointCloudT*)), this, SIGNAL(filterComplete(PointCloudT*)));
+
+//		// Start the first filter
+//		QThreadPool::globalInstance()->start(filter);
+//	}
 
 }
 
@@ -237,7 +360,7 @@ void DialogFilter::filterError(QString error)
 	// Hide the progress bars and enable the button
 	ui->progressMain->setVisible(false);
 	ui->progressSub->setVisible(false);
-	ui->addFilterButton->setEnabled(true);
+	ui->itemTree->setEnabled(true);
 
 	// Figure out which filter screwed up
 	QObject *sentFrom = QObject::sender();
@@ -258,39 +381,144 @@ void DialogFilter::filterError(QString error)
 
 void DialogFilter::filterStarted()
 {
-	ui->progressMain->setFormat("Filter Step " + QString::number(currentFilter+1));
+	ui->progressMain->setFormat("Filter Step " + QString::number(currentStep+1));
 }
 
 
 void DialogFilter::filterProgress(int val)
 {
-	ui->progressMain->setValue(100*currentFilter + val);
+	ui->progressMain->setValue(100*currentStep + val);
 	ui->progressSub->setValue(val);
 }
 
 
-void DialogFilter::filterFinished(PointCloudT *cloud)
+void DialogFilter::filterFinished(PointCloudT *filterCloud)
 {
-	// Make the next filter the current filter
-	++currentFilter;
+	// Make the next step the current step
+	++currentStep;
 
-	// Make sure there is a next filter
-	if (currentFilter < filterList.size())
+	// Make sure there is a next step
+	if (currentStep < itemList.size())
 	{
-		Filter *filter = filterList.at(currentFilter);
-		filter->setAutoDelete(false);
+		QObject *nextStep = itemList.at(currentStep);
+		Filter *filter = 0;
+		Grid *grid = 0;
+		for (int i=0; i<filterList.size(); ++i)
+			if (nextStep == filterList[i])
+				filter = filterList[i];
+		for (int i=0; i<gridList.size(); ++i)
+			if (nextStep == gridList[i])
+				grid = gridList[i];
+
 		if (filter)
 		{
 			// Send the point cloud to the next filter
-			filter->setInputCloud(cloud);
+			filter->setInputCloud(filterCloud);
 			QThreadPool::globalInstance()->start(filter);
+		}
+		else if (grid)
+		{
+			// Send the point cloud to the next grid
+			grid->setInputCloud(filterCloud);
+			QThreadPool::globalInstance()->start(grid);
 		}
 	} else {
 
-		disconnect(filterList.last(), SIGNAL(filterFinished(PointCloudT*)), this, SIGNAL(filterComplete(PointCloudT*)));
-		this->cloud = cloud;
+		QObject *lastStep = itemList.last();
+		Filter *lastFilter = 0;
+		for (int i=0; i<filterList.size(); ++i)
+			if (lastStep == filterList[i])
+				lastFilter = filterList[i];
+		Grid *lastGrid = 0;
+		for (int i=0; i<gridList.size(); ++i)
+			if (lastStep == gridList[i])
+				lastGrid = gridList[i];
+
+		if (lastFilter)
+			disconnect(lastFilter, SIGNAL(filterFinished(PointCloudT*)), this, SIGNAL(filterComplete(PointCloudT*)));
+		else if (lastGrid)
+			disconnect(lastGrid, SIGNAL(gridFinished(Grid*)), this, SIGNAL(filterComplete(Grid*)));
+
+		this->cloud = filterCloud;
 		ui->progressMain->setVisible(false);
 		ui->progressSub->setVisible(false);
-		ui->addFilterButton->setEnabled(true);
+		ui->itemTree->setEnabled(true);
+
+	}
+
+//	// Make the next filter the current filter
+//	++currentStep;
+
+//	// Make sure there is a next filter
+//	if (currentStep < filterList.size())
+//	{
+//		Filter *filter = filterList.at(currentStep);
+//		filter->setAutoDelete(false);
+//		if (filter)
+//		{
+//			// Send the point cloud to the next filter
+//			filter->setInputCloud(cloud);
+//			QThreadPool::globalInstance()->start(filter);
+//		}
+//	} else {
+
+//		disconnect(filterList.last(), SIGNAL(filterFinished(PointCloudT*)), this, SIGNAL(filterComplete(PointCloudT*)));
+//		this->cloud = cloud;
+//		ui->progressMain->setVisible(false);
+//		ui->progressSub->setVisible(false);
+//		ui->itemTree->setEnabled(true);
+//	}
+}
+
+
+void DialogFilter::gridError(QString error)
+{
+
+}
+
+
+void DialogFilter::gridStarted()
+{
+	ui->progressMain->setFormat("Grid Step " + QString::number(currentStep+1));
+}
+
+
+void DialogFilter::gridProgress(int val)
+{
+	ui->progressMain->setValue(100*currentStep + val);
+	ui->progressSub->setValue(val);
+}
+
+
+void DialogFilter::gridFinished(Grid *grid)
+{
+	// Make the next step the current step
+	++currentStep;
+
+	// Make sure there is a next step
+	if (currentStep < itemList.size())
+	{
+		QObject *nextStep = itemList.at(currentStep);
+		Filter *filter = 0;
+		Grid *nextGrid = 0;
+		for (int i=0; i<filterList.size(); ++i)
+			if (nextStep == filterList[i])
+				filter = filterList[i];
+		for (int i=0; i<gridList.size(); ++i)
+			if (nextStep == gridList[i])
+				nextGrid = gridList[i];
+
+		if (filter)
+		{
+			// Send the grid to the next filter
+			filter->setInputGrid(grid);
+			QThreadPool::globalInstance()->start(filter);
+		}
+		else if (nextGrid)
+		{
+			// Send the grid to the next grid
+			nextGrid->setInputGrid(grid);
+			QThreadPool::globalInstance()->start(nextGrid);
+		}
 	}
 }

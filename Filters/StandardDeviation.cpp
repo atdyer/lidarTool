@@ -1,12 +1,22 @@
 #include "StandardDeviation.h"
 
-StandardDeviation::StandardDeviation()
+StandardDeviation::StandardDeviation(QObject *parent) :
+	Filter(parent)
 {
 	numStdDevs = 1.0;
 }
 
 
 void StandardDeviation::run()
+{
+	if (cloud)
+		runCloud();
+	else if (grid)
+		runGrid();
+}
+
+
+void StandardDeviation::runCloud()
 {
 	// Check for a cloud to work on
 	if (!cloud)
@@ -60,14 +70,7 @@ void StandardDeviation::run()
 	{
 		if (!(cloud->points[i].z > maxVal || cloud->points[i].z < minVal))
 		{
-			PointT newPoint;
-			newPoint.x = cloud->points[i].x;
-			newPoint.y = cloud->points[i].y;
-			newPoint.z = cloud->points[i].z;
-			newPoint.r = cloud->points[i].r;
-			newPoint.g = cloud->points[i].g;
-			newPoint.b = cloud->points[i].b;
-			newPoint.a = cloud->points[i].a;
+			PointT newPoint (cloud->points[i]);
 			newCloud->points.push_back(newPoint);
 		}
 		++progress;
@@ -76,6 +79,19 @@ void StandardDeviation::run()
 	}
 
 	emit filterFinished(newCloud);
+}
+
+
+void StandardDeviation::runGrid()
+{
+	// Fake it
+	emit filterStarted();
+
+	for (int i=0; i<1000; ++i)
+		if (i%10 == 0)
+			emit filterProgress(i/10);
+
+	emit filterFinished(grid);
 }
 
 

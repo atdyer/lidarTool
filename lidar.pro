@@ -23,7 +23,11 @@ SOURCES += main.cpp\
     Filters/StandardDeviation.cpp \
     Filters/AverageDeviation.cpp \
     Forms/FormAverageDeviation.cpp \
-    Forms/FormStandardDeviation.cpp
+    Forms/FormStandardDeviation.cpp \
+    Grids/Grid.cpp \
+    Grids/GridCell.cpp \
+    Grids/RegularGrid.cpp \
+    Forms/FormRegularGrid.cpp
 
 HEADERS  += MainWindow.h \
     DataTypes.h \
@@ -32,9 +36,14 @@ HEADERS  += MainWindow.h \
     Filters/StandardDeviation.h \
     Filters/AverageDeviation.h \
     Forms/FormAverageDeviation.h \
-    Forms/FormStandardDeviation.h
+    Forms/FormStandardDeviation.h \
+    Grids/Grid.h \
+    Grids/GridCell.h \
+    Grids/RegularGrid.h \
+    Forms/FormRegularGrid.h
 
 FORMS    += MainWindow.ui \
     Dialogs/DialogFilter.ui \
     Forms/FormAverageDeviation.ui \
-    Forms/FormStandardDeviation.ui
+    Forms/FormStandardDeviation.ui \
+    Forms/FormRegularGrid.ui

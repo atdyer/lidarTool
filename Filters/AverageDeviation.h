@@ -12,7 +12,7 @@ class AverageDeviation : public Filter
 {
 		Q_OBJECT
 	public:
-		AverageDeviation();
+		AverageDeviation(QObject *parent = 0);
 		static QString	GetFilterName() {return "Average Deviation";}
 
 		void	run();

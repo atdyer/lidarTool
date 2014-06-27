@@ -1,6 +1,7 @@
 #include "AverageDeviation.h"
 
-AverageDeviation::AverageDeviation()
+AverageDeviation::AverageDeviation(QObject *parent) :
+	Filter(parent)
 {
 	tendencyMeasure = 0;
 	scalingFactor = 1.0;
@@ -85,14 +86,7 @@ PointCloudT *AverageDeviation::runMean()
 	{
 		if (!(cloud->points[i].z > maxVal || cloud->points[i].z < minVal))
 		{
-			PointT newPoint;
-			newPoint.x = cloud->points[i].x;
-			newPoint.y = cloud->points[i].y;
-			newPoint.z = cloud->points[i].z;
-			newPoint.r = cloud->points[i].r;
-			newPoint.g = cloud->points[i].g;
-			newPoint.b = cloud->points[i].b;
-			newPoint.a = cloud->points[i].a;
+			PointT newPoint (cloud->points[i]);
 			newCloud->points.push_back(newPoint);
 		}
 		++progress;
@@ -149,14 +143,7 @@ PointCloudT *AverageDeviation::runMedian()
 	{
 		if (!(cloud->points[i].z > maxVal || cloud->points[i].z < minVal))
 		{
-			PointT newPoint;
-			newPoint.x = cloud->points[i].x;
-			newPoint.y = cloud->points[i].y;
-			newPoint.z = cloud->points[i].z;
-			newPoint.r = cloud->points[i].r;
-			newPoint.g = cloud->points[i].g;
-			newPoint.b = cloud->points[i].b;
-			newPoint.a = cloud->points[i].a;
+			PointT newPoint (cloud->points[i]);
 			newCloud->points.push_back(newPoint);
 		}
 		++progress;
@@ -231,14 +218,7 @@ PointCloudT *AverageDeviation::runMode()
 	{
 		if (!(cloud->points[i].z > maxVal || cloud->points[i].z < minVal))
 		{
-			PointT newPoint;
-			newPoint.x = cloud->points[i].x;
-			newPoint.y = cloud->points[i].y;
-			newPoint.z = cloud->points[i].z;
-			newPoint.r = cloud->points[i].r;
-			newPoint.g = cloud->points[i].g;
-			newPoint.b = cloud->points[i].b;
-			newPoint.a = cloud->points[i].a;
+			PointT newPoint (cloud->points[i]);
 			newCloud->points.push_back(newPoint);
 		}
 		++progress;
